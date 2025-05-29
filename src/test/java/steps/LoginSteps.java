@@ -14,11 +14,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static org.junit.Assert.assertTrue;
 
-/**
- * Classe responsável pelos steps de teste de login
- * Implementa os cenários de teste positivos e negativos
- * usando page objects para melhor manutenibilidade
- */
+
 public class LoginSteps extends TestBase {
     private Scenario cenarioAtual;
     private static final String URL_LOGIN = "https://practicetestautomation.com/practice-test-login/";

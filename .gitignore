@@ -44,7 +44,8 @@ dependency-reduced-pom.xml
 *.tar.gz
 *.rar
 
-# Evidências dos testes (opcional, remova se quiser versionar as evidências)
+# Evidências dos testes
+target/evidencias/
 evidencias/
 
 # ChromeDriver e outros drivers

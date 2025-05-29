@@ -16,7 +16,7 @@ import java.time.Duration;
 public class TestBase {
     protected static WebDriver driver;
     protected static WebDriverWait wait;
-    private static final String PASTA_EVIDENCIAS = "evidencias/";
+    private static final String PASTA_EVIDENCIAS = "target/evidencias/";
     private static String pastaAtual;
 
     public static void setupDriver() {
