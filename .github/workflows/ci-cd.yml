@@ -22,51 +22,10 @@ jobs:
     - name: Setup Chrome
       uses: browser-actions/setup-chrome@latest
       
-    - name: Debug Information
-      run: |
-        echo "Workspace directory:"
-        pwd
-        ls -la
-        
-        echo "Maven version:"
-        mvn --version
-        
-        echo "Chrome version:"
-        google-chrome --version
-        
-        echo "Directory structure:"
-        tree .
-        
-    - name: Maven Clean
-      run: mvn clean -B
-      
-    - name: Maven Compile
-      run: mvn compile -B
-      
-    - name: Run Tests
-      run: |
-        echo "Running tests..."
-        mvn test -B -Dtest=RunCucumberTest
-        
-        echo "Test execution completed. Checking directories..."
-        ls -la target/
-        
-        echo "Creating artifacts directory..."
-        mkdir -p target/artifacts
-        
-        echo "Copying test results..."
-        cp -r target/evidencias target/artifacts/ || echo "No evidencias directory found"
-        cp -r target/surefire-reports target/artifacts/ || echo "No surefire-reports directory found"
-        
-        echo "Listing final artifacts:"
-        ls -la target/artifacts/
-    
-    - name: Upload Test Results
-      if: always()
-      uses: actions/upload-artifact@v3
+    - name: Build and Test
+      run: mvn clean test
+
+    - uses: actions/upload-artifact@v3
       with:
         name: test-results
-        path: |
-          target/artifacts/
-          target/surefire-reports/
-        retention-days: 30 
+        path: target/surefire-reports/ 
