@@ -6,25 +6,36 @@ on:
   pull_request:
     branches: [ "main", "master" ]
 
-permissions:
-  contents: read
-  actions: write
-
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
     - uses: actions/checkout@v2
-    
-    - name: Create test file
+
+    - name: Create and Upload Artifact
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        mkdir -p test-output
-        echo "Test content" > test-output/test.txt
-        ls -la test-output/
-    
-    - name: Upload test file
-      uses: actions/upload-artifact@v2
-      with:
-        name: test-files
-        path: test-output/ 
+        # Create test output
+        mkdir -p artifact
+        echo "Test content" > artifact/test.txt
+        echo "Created file:"
+        cat artifact/test.txt
+        
+        # Create artifact using REST API
+        cd artifact
+        zip -r ../artifact.zip ./*
+        cd ..
+        
+        echo "Uploading artifact..."
+        curl -X POST \
+          -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Accept: application/vnd.github.v3+json" \
+          -F "workflow_run=${{ github.run_id }}" \
+          -F "name=test-artifact" \
+          -F "file=@artifact.zip" \
+          "https://api.github.com/repos/${{ github.repository }}/actions/artifacts" 
