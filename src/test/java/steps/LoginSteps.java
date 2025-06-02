@@ -95,7 +95,7 @@ public class LoginSteps extends TestBase {
     public void verificarBotaoLogout() {
         // Verifica se o botão de logout está visível após o login
         WebElement botaoLogout = wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Log out")));
-        assertTrue("O botão de logout não está visível na página após o login", 
+        assertTrue("Botão de logout não está visível na página após o login", 
                   botaoLogout.isDisplayed());
         capturarTela("05_logout_visivel");
     }

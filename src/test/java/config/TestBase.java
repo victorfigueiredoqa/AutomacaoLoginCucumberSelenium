@@ -57,7 +57,7 @@ public class TestBase {
             File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
             FileUtils.copyFile(screenshot, new File(caminhoEvidencia));
         } catch (IOException e) {
-            System.out.println("Erro ao salvar evidência: " + e.getMessage());
+            System.out.println("Ocorreu erro ao salvar evidência: " + e.getMessage());
         }
     }
 
