@@ -16,26 +16,47 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Create and Upload Artifact
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Setup Chrome
+      uses: browser-actions/setup-chrome@latest
+
+    - name: Run Tests and Create Artifacts
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        # Create test output
-        mkdir -p artifact
-        echo "Test content" > artifact/test.txt
-        echo "Created file:"
-        cat artifact/test.txt
+        # Executar os testes
+        mvn clean test
         
-        # Create artifact using REST API
-        cd artifact
-        zip -r ../artifact.zip ./*
+        # Criar diretório para artefatos
+        mkdir -p artifacts
+        
+        # Copiar evidências e relatórios
+        if [ -d "target/evidencias" ]; then
+          cp -r target/evidencias artifacts/
+        fi
+        if [ -d "target/surefire-reports" ]; then
+          cp -r target/surefire-reports artifacts/
+        fi
+        
+        # Criar arquivo de log
+        echo "Test execution completed at $(date)" > artifacts/execution.log
+        
+        # Zipar artefatos
+        cd artifacts
+        zip -r ../test-artifacts.zip ./*
         cd ..
         
-        echo "Uploading artifact..."
+        echo "Uploading artifacts..."
         curl -X POST \
           -H "Authorization: token $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github.v3+json" \
           -F "workflow_run=${{ github.run_id }}" \
-          -F "name=test-artifact" \
-          -F "file=@artifact.zip" \
+          -F "name=test-results" \
+          -F "file=@test-artifacts.zip" \
           "https://api.github.com/repos/${{ github.repository }}/actions/artifacts" 
