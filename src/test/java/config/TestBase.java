@@ -25,6 +25,14 @@ public class TestBase {
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--start-maximized");
             options.addArguments("--remote-allow-origins=*");
+            
+            // Configurações específicas para ambiente CI
+            if (System.getenv("CI") != null) {
+                options.addArguments("--headless");  // Modo headless para CI
+                options.addArguments("--no-sandbox");
+                options.addArguments("--disable-dev-shm-usage");
+            }
+            
             driver = new ChromeDriver(options);
             wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         }
