@@ -21,22 +21,32 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-        cache: maven
-
+    
     - name: Setup Chrome
       uses: browser-actions/setup-chrome@latest
+      
+    - name: Configure Maven Settings
+      run: |
+        mkdir -p ~/.m2
+        echo "<settings><mirrors><mirror><id>central</id><url>https://repo1.maven.org/maven2</url><mirrorOf>*</mirrorOf></mirror></mirrors></settings>" > ~/.m2/settings.xml
 
     - name: Run Tests and Create Artifacts
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        # Limpar e baixar dependências primeiro
+        echo "Downloading dependencies..."
+        mvn dependency:go-offline
+        
         # Executar os testes
-        mvn clean test
+        echo "Running tests..."
+        mvn clean test --no-transfer-progress
         
         # Criar diretório para artefatos
         mkdir -p artifacts
         
         # Copiar evidências e relatórios
+        echo "Collecting artifacts..."
         if [ -d "target/evidencias" ]; then
           cp -r target/evidencias artifacts/
         fi
@@ -48,6 +58,7 @@ jobs:
         echo "Test execution completed at $(date)" > artifacts/execution.log
         
         # Zipar artefatos
+        echo "Compressing artifacts..."
         cd artifacts
         zip -r ../test-artifacts.zip ./*
         cd ..
